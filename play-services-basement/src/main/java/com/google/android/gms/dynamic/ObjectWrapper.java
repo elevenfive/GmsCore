@@ -39,7 +39,7 @@ public class ObjectWrapper<T> extends IObjectWrapper.Stub {
         }
         IBinder binder = obj.asBinder();
         Field[] fields = binder.getClass().getDeclaredFields();
-        if (fields.length != 1) {
+        if (fields.length < 1) {
             throw new IllegalArgumentException();
         }
         Field field = fields[0];
