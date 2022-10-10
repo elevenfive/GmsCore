@@ -17,12 +17,15 @@
 package com.google.android.gms.dynamic;
 
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class ObjectWrapper<T> extends IObjectWrapper.Stub {
+    private static final String TAG = ObjectWrapper.class.toString();
     private final T t;
 
     public ObjectWrapper(T t) {
@@ -41,6 +44,9 @@ public class ObjectWrapper<T> extends IObjectWrapper.Stub {
         Field[] fields = binder.getClass().getDeclaredFields();
         if (fields.length < 1) {
             throw new IllegalArgumentException();
+        }
+        if (fields.length > 1) {
+            Log.d(TAG, "unwrap: found fields: " + Arrays.toString(fields));
         }
         Field field = fields[0];
         if (!field.isAccessible()) {
