@@ -17,12 +17,10 @@
 package com.google.android.gms.dynamic;
 
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class ObjectWrapper<T> extends IObjectWrapper.Stub {
     private final T t;
@@ -48,11 +46,25 @@ public class ObjectWrapper<T> extends IObjectWrapper.Stub {
             throw new IllegalArgumentException("No fields were found");
         }
 
-        if (fields.length > 2 || (fields.length == 2 && !fields[1].isSynthetic())) {
-            throw new IllegalArgumentException("Too many fields were found");
+        @Nullable
+        Field field = null;
+
+        for (Field currentField : fields) {
+            if (currentField.isSynthetic()) {
+                continue;
+            }
+
+            if (field == null) {
+                field = currentField;
+            } else {
+                throw new IllegalArgumentException("Too many non-synthetic fields were found");
+            }
         }
 
-        Field field = fields[0];
+        if (field == null) {
+            throw new IllegalArgumentException("No non-synthetic fields were found");
+        }
+
         if (!field.isAccessible()) {
             field.setAccessible(true);
             try {
